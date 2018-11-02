@@ -235,14 +235,14 @@ describe('greeter function', () => {
   });
 
   it('test get single row with timestamp', async (done) => {
+    const table = 'test-get-single-table';
+
+    const hbaseClient = new Hbase({
+      host: 'localhost',
+      port: 8080,
+    });
+
     try {
-      const table = 'test-get-single-table';
-
-      const hbaseClient = new Hbase({
-        host: 'localhost',
-        port: 8080,
-      });
-
       await hbaseClient
         .table({ table })
         .create(
@@ -265,17 +265,24 @@ describe('greeter function', () => {
         { column: 'my_column_family:c1', timestamp, $: 'my value1' },
       ];
 
+      console.log( JSON.stringify(cells) );
+
       await hbaseClient
         .table({ table })
         .row({ key: 'rowKey' })
         .put(cells);
 
+      /** The timestamp in the URL looks for the newest data set with an EARLIER timestamp! **/
+      // https://stackoverflow.com/questions/37985426/hbase-get-request-for-row-data-with-timestamp
+
       const res = await hbaseClient
         .table({ table })
         .row({ key: 'rowKey' })
         .column({ column: 'my_column_family:c1' })
-        .timestamp({ timestamp })
+        .timestamp({ timestamp: timestamp + 1 })
         .get();
+
+      console.log( JSON.stringify(res) );
 
       expect(res.Row.length).toEqual(1);
       expect(res.Row[0].key).toEqual('rowKey');
@@ -283,12 +290,11 @@ describe('greeter function', () => {
       expect(res.Row[0].Cell[0].column).toEqual(cells[0].column);
       expect(res.Row[0].Cell[0].$).toEqual(cells[0].$);
 
-      console.log( JSON.stringify(res) );
-
       await hbaseClient.table({ table }).drop();
 
       done();
     } catch (e) {
+      await hbaseClient.table({ table }).drop();
       done.fail(e);
     }
   });
@@ -397,6 +403,7 @@ describe('greeter function', () => {
       const res = await hbaseClient
         .table({ table })
         .row({ key: 'rowKey' })
+        .column({ column: 'my_column_family' })
         .get({ v: 2 });
 
       console.log( JSON.stringify(res) );
@@ -411,6 +418,164 @@ describe('greeter function', () => {
       expect(res.Row[0].Cell[1].timestamp).toEqual(cells[1].timestamp);
       expect(res.Row[0].Cell[1].column).toEqual(cells[1].column);
       expect(res.Row[0].Cell[1].$).toEqual(cells[1].$);
+
+      await hbaseClient.table({ table }).drop();
+
+      done();
+    } catch (e) {
+      await hbaseClient.table({ table }).drop();
+      done.fail(e);
+    }
+  });
+
+  it('test get with column Only', async (done) => {
+    const table = 'test-get-column-table';
+
+    const hbaseClient = new Hbase({
+      host: 'localhost',
+      port: 8080,
+    });
+
+    try {
+      await hbaseClient
+        .table({ table })
+        .create(
+          {
+            ColumnSchema: [
+              {
+                name: 'my_column_family',
+                TTL: 60 * 60 * 24 * 365 * 1,
+                COMPRESSION: 'gz',
+                REPLICATION_SCOPE: 1,
+                VERSIONS: '5',
+              },
+            ],
+          },
+        );
+
+      const timestamp = Date.now();
+
+      const cells = [
+        { column: 'my_column_family:c1', timestamp, $: 'my value1' },
+        { column: 'my_column_family:c2', timestamp, $: 'my value2' },
+      ];
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .put(cells);
+
+      const undefinedResponse = await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .column({ column: 'my_column_family' })
+        .timestamp({ timestamp })
+        .get()
+        .catch(error => console.log(error.response));
+
+      expect(undefinedResponse).toEqual(undefined);
+
+      const res = await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .column({ column: 'my_column_family' })
+        .get();
+
+      expect(res.Row.length).toEqual(1);
+      expect(res.Row[0].key).toEqual('rowKey');
+      expect(res.Row[0].Cell.length).toEqual(2);
+      expect(res.Row[0].Cell[0].timestamp).toEqual(cells[0].timestamp);
+      expect(res.Row[0].Cell[0].column).toEqual(cells[0].column);
+      expect(res.Row[0].Cell[0].$).toEqual(cells[0].$);
+
+      expect(res.Row[0].Cell[1].timestamp).toEqual(cells[1].timestamp);
+      expect(res.Row[0].Cell[1].column).toEqual(cells[1].column);
+      expect(res.Row[0].Cell[1].$).toEqual(cells[1].$);
+
+      console.log( JSON.stringify(res) );
+
+      await hbaseClient.table({ table }).drop();
+
+      done();
+    } catch (e) {
+      await hbaseClient.table({ table }).drop();
+      done.fail(e);
+    }
+  });
+
+  it('test delete row', async (done) => {
+    const table = 'test-get-column-table';
+
+    const hbaseClient = new Hbase({
+      host: 'localhost',
+      port: 8080,
+    });
+
+    try {
+      await hbaseClient
+        .table({ table })
+        .create(
+          {
+            ColumnSchema: [
+              {
+                name: 'my_column_family',
+                TTL: 60 * 60 * 24 * 365 * 1,
+                COMPRESSION: 'gz',
+                REPLICATION_SCOPE: 1,
+                VERSIONS: '5',
+              },
+              {
+                name: 'another_column_family',
+                TTL: 60 * 60 * 24 * 365 * 1,
+                COMPRESSION: 'gz',
+                REPLICATION_SCOPE: 1,
+                VERSIONS: '5',
+              },
+            ],
+          },
+        );
+
+      const timestamp = Date.now();
+
+      const cells = [
+        { column: 'another_column_family:c1', timestamp, $: 'my value1' },
+        { column: 'another_column_family:c2', timestamp, $: 'my value2' },
+        { column: 'my_column_family:c1', timestamp, $: 'my value3' },
+        { column: 'my_column_family:c1', timestamp: timestamp + 100, $: 'my value4' },
+        { column: 'my_column_family:c2', timestamp, $: 'my value5' },
+        { column: 'my_column_family:c2', timestamp: timestamp + 100, $: 'my value6' },
+      ];
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .put(cells);
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .column({ column: 'another_column_family' })
+        .delete();
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .column({ column: 'my_column_family:c1' })
+        .delete();
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .column({ column: 'my_column_family:c2' })
+        .timestamp({ timestamp })
+        .delete();
+
+      const res = await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .get({ v: 2 });
+
+      console.log( JSON.stringify(res) );
 
       await hbaseClient.table({ table }).drop();
 

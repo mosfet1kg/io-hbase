@@ -72,13 +72,13 @@ interface InterfaceColumnSchema {
 
 interface ITableFn {
   findAll: () => Promise<ITableFindAllOut>;
-  create: (input: ITableCreateInput) => Promise<any>;
-  drop: () => Promise<any>;
+  create: (input: ITableCreateInput) => Promise<void>;
+  drop: () => Promise<void>;
   exists: () => Promise<boolean>;
-  update: (input: ITableUpdateInput) => Promise<any>;
+  update: (input: ITableUpdateInput) => Promise<void>;
   schema: () => Promise<ITableSchemaOut>;
   region: () => Promise<ITableRegionOut>;
-  row: (input: IRowInput) => any;
+  row: (input: IRowInput) => IRowFn;
 }
 
 interface IVersionFn {
@@ -143,4 +143,12 @@ interface Region {
   totalStaticBloomSizeKB: number;
   totalCompactingKVs: number;
   currentCompactedKVs: number;
+}
+
+interface IRowFn {
+  put: (cells: ICell[]) => Promise<void>;
+  timestamp: (input: { timestamp: number }) => IRowFn;
+  column: (input: { column: string; qualifier?: string; }) => IRowFn;
+  get: (input?: INumOfVersions) => Promise<IRowResponse>;
+  delete: () => Promise<void>;
 }

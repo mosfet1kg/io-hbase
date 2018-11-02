@@ -135,8 +135,15 @@ export function row({ key }) {
       return axios({
         method: 'GET',
         baseURL: this.getEndPoint(),
-        url: joinUrl(this.getTableName(), key, this.columnQualifier) + versionQueryString,
+        url: joinUrl(this.getTableName(), key, this.columnQualifier, this.timeStamp) + versionQueryString,
       }).then(res => decodeRowResponse(res.data));
+    },
+    delete: (): Promise<void> => {
+      return axios({
+        method: 'DELETE',
+        baseURL: this.getEndPoint(),
+        url: joinUrl(this.getTableName(), key, this.columnQualifier, this.timeStamp),
+      }).then(res => res.data);
     },
   };
 }

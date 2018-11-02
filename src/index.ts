@@ -11,6 +11,8 @@ export default class Hbase implements IHbase {
   private port: string | number;
   private namespace: string;
   private tableName: string;
+  private timeStamp: number;
+  private columnQualifier: string;
 
   constructor(
     input?: IClientConstructorInput,
@@ -20,6 +22,11 @@ export default class Hbase implements IHbase {
     this.host = host;
     this.port = port;
     this.namespace = namespace;
+  }
+
+  private clearTempParams() {
+    this.columnQualifier = null;
+    this.timeStamp =  null;
   }
 
   private getEndPoint(): string {
@@ -36,6 +43,8 @@ export default class Hbase implements IHbase {
 
   table(input?: ITableNameInput) {
     this.tableName = get(input, 'table');
+    this.clearTempParams();
+
     return Object.keys(tableFn).reduce((prev, key) => {
       if ( isFunction(tableFn[key]) ) {
         prev = {

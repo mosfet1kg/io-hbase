@@ -1,3 +1,7 @@
+import {
+  get,
+} from 'lodash';
+
 export function joinUrl(...props) {
   return props.reduce((prev, curr) => {
     if ( !! curr ) {
@@ -9,8 +13,10 @@ export function joinUrl(...props) {
 }
 
 export function decodeRowResponse(response: IRowResponse) {
+  const row = get(response, 'Row', []);
+
   return {
-    Row: response.Row.map((el) => {
+    Row: row.map((el) => {
       const {
         key,
         Cell,
