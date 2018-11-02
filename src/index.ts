@@ -1,4 +1,6 @@
 import * as tableFn from './table';
+import * as versionFn from './version';
+import * as statusFn from './status';
 import {
   get,
   isFunction,
@@ -44,4 +46,29 @@ export default class Hbase implements IHbase {
       return prev;
     }, {}) as ITableFn;
   }
+
+  version() {
+     return Object.keys(versionFn).reduce((prev, key) => {
+      if ( isFunction(versionFn[key]) ) {
+        prev = {
+          ...prev,
+          [key]: (...props) => versionFn[key].apply(this, props),
+        };
+      }
+      return prev;
+    }, {}) as IVersionFn;
+  }
+
+  status() {
+    return Object.keys(statusFn).reduce((prev, key) => {
+      if ( isFunction(statusFn[key]) ) {
+        prev = {
+          ...prev,
+          [key]: (...props) => statusFn[key].apply(this, props),
+        };
+      }
+      return prev;
+    }, {}) as IStatusFn;
+  }
+
 }

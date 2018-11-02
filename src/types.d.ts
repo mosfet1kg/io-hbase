@@ -1,5 +1,7 @@
 interface IHbase {
   table: (input: ITableNameInput) => ITableFn;
+  version: () => IVersionFn;
+  status: () => IStatusFn;
 }
 
 interface IClientConstructorInput {
@@ -79,6 +81,14 @@ interface ITableFn {
   row: (input: IRowInput) => any;
 }
 
+interface IVersionFn {
+  cluster: () => Promise<string>;
+}
+
+interface IStatusFn {
+  cluster: () => Promise<IStatusClusterResponse>;
+}
+
 interface ICell {
   column: string;
   timestamp: number;
@@ -100,4 +110,37 @@ interface IRowResponse {
 
 interface INumOfVersions {
   v: number;
+}
+
+interface IStatusClusterResponse {
+  regions: number;
+  requests: number;
+  averageLoad: number;
+  LiveNodes: LiveNode[];
+  DeadNodes: any[];
+}
+
+interface LiveNode {
+  name: string;
+  startCode: number;
+  requests: number;
+  heapSizeMB: number;
+  maxHeapSizeMB: number;
+  Region: Region[];
+}
+
+interface Region {
+  name: string;
+  stores: number;
+  storefiles: number;
+  storefileSizeMB: number;
+  memstoreSizeMB: number;
+  storefileIndexSizeMB: number;
+  readRequestsCount: number;
+  writeRequestsCount: number;
+  rootIndexSizeKB: number;
+  totalStaticIndexSizeKB: number;
+  totalStaticBloomSizeKB: number;
+  totalCompactingKVs: number;
+  currentCompactedKVs: number;
 }

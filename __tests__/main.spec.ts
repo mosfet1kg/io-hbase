@@ -421,4 +421,38 @@ describe('greeter function', () => {
     }
   });
 
+  it('test cluster version', async (done) => {
+    try {
+      const hbaseClient = new Hbase({
+        host: 'localhost',
+        port: 8080,
+      });
+
+      const res = await hbaseClient.version().cluster();
+
+      console.log( res );
+
+      done();
+    } catch (e) {
+      done.fail(e);
+    }
+  });
+
+  it('test status version', async (done) => {
+    try {
+      const hbaseClient = new Hbase({
+        host: 'localhost',
+        port: 8080,
+      });
+
+      const res = await hbaseClient.status().cluster();
+
+      console.log( JSON.stringify(res) );
+
+      done();
+    } catch (e) {
+      done.fail(e);
+    }
+  });
+
 });
