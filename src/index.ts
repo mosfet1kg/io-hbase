@@ -4,6 +4,8 @@ import * as statusFn from './status';
 import {
   get,
   isFunction,
+  isUndefined,
+  isNull,
 } from 'lodash';
 
 export default class Hbase implements IHbase {
@@ -11,7 +13,8 @@ export default class Hbase implements IHbase {
   private port: string | number;
   private namespace: string;
   private tableName: string;
-  private timeStamp: number;
+  private startTime: number;
+  private endTime: number;
   private columnQualifier: string;
 
   constructor(
@@ -26,7 +29,14 @@ export default class Hbase implements IHbase {
 
   private clearTempParams() {
     this.columnQualifier = null;
-    this.timeStamp =  null;
+    this.startTime =  null;
+    this.endTime = null;
+  }
+
+  private getTimeRange() {
+    const range = [this.startTime, this.endTime].filter(el => !isNull(el) && !isUndefined(el));
+
+    return range.length === 0 ? '' : '/' + range.join(',');
   }
 
   private getEndPoint(): string {

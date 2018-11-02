@@ -279,7 +279,7 @@ describe('greeter function', () => {
         .table({ table })
         .row({ key: 'rowKey' })
         .column({ column: 'my_column_family:c1' })
-        .timestamp({ timestamp: timestamp + 1 })
+        .timestamp({ endTime: timestamp + 1 })
         .get();
 
       console.log( JSON.stringify(res) );
@@ -469,7 +469,7 @@ describe('greeter function', () => {
         .table({ table })
         .row({ key: 'rowKey' })
         .column({ column: 'my_column_family' })
-        .timestamp({ timestamp })
+        .timestamp({ endTime: timestamp })
         .get()
         .catch(error => console.log(error.response));
 
@@ -585,6 +585,66 @@ describe('greeter function', () => {
       done.fail(e);
     }
   });
+
+  it('test get with time range', async (done) => {
+    const table = 'test-time-range-table';
+
+    const hbaseClient = new Hbase({
+      host: 'localhost',
+      port: 8080,
+    });
+
+    try {
+      await hbaseClient
+        .table({ table })
+        .create(
+          {
+            ColumnSchema: [
+              {
+                name: 'my_column_family',
+                TTL: 60 * 60 * 24 * 365 * 1,
+                COMPRESSION: 'gz',
+                REPLICATION_SCOPE: 1,
+                VERSIONS: '5',
+              },
+            ],
+          },
+        );
+
+      const timestamp = Date.now();
+
+      const cells = [
+        { column: 'my_column_family:c1', timestamp, $: 'my value3' },
+        { column: 'my_column_family:c1', timestamp: timestamp + 100, $: 'my value4' },
+        { column: 'my_column_family:c2', timestamp, $: 'my value5' },
+        { column: 'my_column_family:c2', timestamp: timestamp + 100, $: 'my value6' },
+      ];
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .put(cells);
+
+      const res = await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .column({ column: 'my_column_family' })
+        .timestamp({ startTime: timestamp, endTime: timestamp + 50 })
+        .get({ v: 2 });
+
+      console.log( JSON.stringify(res) );
+
+      expect(res.Row[0].Cell.length).toEqual(2);
+
+      await hbaseClient.table({ table }).drop();
+
+      done();
+    } catch (e) {
+      await hbaseClient.table({ table }).drop();
+      done.fail(e);
+    }
+  });
+
 
   it('test cluster version', async (done) => {
     try {

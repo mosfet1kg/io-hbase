@@ -145,9 +145,15 @@ interface Region {
   currentCompactedKVs: number;
 }
 
+interface ITimeStamp {
+  startTime?: number;
+  endTime?: number;
+  timestamp?: number;
+}
+
 interface IRowFn {
   put: (cells: ICell[]) => Promise<void>;
-  timestamp: (input: { timestamp: number }) => IRowFn;
+  timestamp: (input: ITimeStamp) => IRowFn;
   column: (input: { column: string; qualifier?: string; }) => IRowFn;
   get: (input?: INumOfVersions) => Promise<IRowResponse>;
   delete: () => Promise<void>;

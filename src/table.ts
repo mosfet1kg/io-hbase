@@ -112,8 +112,22 @@ export function row({ key }) {
         },
       }).then(res => res.data);
     },
-    timestamp: (input: { timestamp: number }) => {
-      this.timeStamp = input.timestamp;
+    timestamp: (input: ITimeStamp) => {
+      if ( !isUndefined(input.timestamp) && ( !isUndefined(input.startTime) || !isUndefined(input.endTime)) ) {
+        throw new Error(`timestamp cannot be used with startTime and end Time.`);
+      }
+
+      if ( isUndefined(input.endTime) && !isUndefined(input.startTime) ) {
+        throw new Error(`If start-timestamp is set, end-timestamp also must be defined.`);
+      }
+
+      this.startTime = input.startTime;
+      this.endTime = input.endTime;
+
+      if ( !isUndefined(input.timestamp) ) {
+        this.endTime = input.timestamp;
+      }
+
       return row.bind(this)({ key });
     },
     column: (input: { column: string; qualifier?: string; }) => {
@@ -135,14 +149,14 @@ export function row({ key }) {
       return axios({
         method: 'GET',
         baseURL: this.getEndPoint(),
-        url: joinUrl(this.getTableName(), key, this.columnQualifier, this.timeStamp) + versionQueryString,
+        url: joinUrl(this.getTableName(), key, this.columnQualifier) + this.getTimeRange() + versionQueryString,
       }).then(res => decodeRowResponse(res.data));
     },
     delete: (): Promise<void> => {
       return axios({
         method: 'DELETE',
         baseURL: this.getEndPoint(),
-        url: joinUrl(this.getTableName(), key, this.columnQualifier, this.timeStamp),
+        url: joinUrl(this.getTableName(), key, this.columnQualifier) + this.getTimeRange(),
       }).then(res => res.data);
     },
   };
