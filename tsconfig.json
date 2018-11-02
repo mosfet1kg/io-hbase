@@ -1,0 +1,19 @@
+{
+  "extends": "./tsconfig.release.json",
+  "compilerOptions": {
+    "outDir": ".",
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  },
+  "include": [
+    "./__tests__",
+    "./src"
+  ],
+  "exclude": [
+    "dist",
+    "out",
+    "lib",
+    "node_modules",
+    "example"
+  ]
+}

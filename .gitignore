@@ -1,0 +1,51 @@
+
+# Logs
+logs
+*.log
+npm-debug.log*
+
+# Dependencies
+node_modules/
+
+# Coverage
+coverage
+
+# Transpiled files
+build/
+
+# VS Code
+.vscode
+!.vscode/tasks.js
+
+# JetBrains IDEs
+.idea/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Misc
+.DS_Store
+
+# Tests
+./__tests__/*.js
+
+# js
+
+*/**/*.js
+*/**/*.d.ts
+*/**/*.js.map
+
+yarn.lock
+package-lock.json
+
+.idea/
+
+!*/**/types.d.ts
+!*/**/jest.config.js
+!*/**/preprocessor.js
+
+dist/
+src/npm/**/*.ts
