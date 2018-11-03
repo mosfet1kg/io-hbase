@@ -1,4 +1,6 @@
 import * as tableServices from './tableServices';
+import { row as rowServices } from './rowServices';
+import { scan as scanServices } from './scanServices';
 import {
   get,
   isFunction,
@@ -73,6 +75,10 @@ export default class Table implements ITable {
   }
 
   row(...props) {
-    return tableServices.row.apply(this, props);
+    return rowServices.apply(this, props);
+  }
+
+  scan(...props) {
+    return scanServices.apply(this, props);
   }
 }

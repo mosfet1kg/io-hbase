@@ -11,7 +11,7 @@ import {
   get,
 } from "lodash";
 
-export default function row({ key }) {
+export function row({ key }) {
   return {
     put: (cells: ICell[]) => {
       const element = {

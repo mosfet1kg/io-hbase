@@ -9,7 +9,6 @@ import { getValidColumnOnly } from './validation';
 import {
   joinUrl,
 } from './utils';
-import rowServices from "./rowServices";
 
 export function findAll()
   : Promise<ITableFindAllOut> {
@@ -84,8 +83,4 @@ export function region()
     baseURL: this.getEndPoint(),
     url: joinUrl(this.getTableName(), 'regions'),
   }).then(res => res.data);
-}
-
-export function row(...props) {
-  return rowServices.apply(this, props);
 }

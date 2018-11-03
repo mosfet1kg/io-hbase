@@ -86,6 +86,7 @@ interface ITable {
   schema: () => Promise<ITableSchemaOut>;
   region: () => Promise<ITableRegionOut>;
   row: (input: IRowInput) => IRowFn;
+  scan: () => any;
 }
 
 interface IVersion {

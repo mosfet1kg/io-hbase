@@ -4,7 +4,7 @@ import {
   findIndex,
 } from 'lodash';
 
-describe('greeter function', () => {
+describe('table function', () => {
 
   beforeAll(async () => {
     jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000;
