@@ -1,7 +1,7 @@
-import * as tableFn from './table';
-import * as versionFn from './version';
-import * as statusFn from './status';
-import * as rowFn from './row';
+import * as versionServices from './versionServices';
+import * as statusServices from './statusServices';
+import Table from './Table';
+
 import {
   get,
   isFunction,
@@ -13,10 +13,6 @@ export default class Hbase implements IHbase {
   private host: string;
   private port: string | number;
   private namespace: string;
-  private tableName: string;
-  private startTime: number;
-  private endTime: number;
-  private columnQualifier: string;
 
   constructor(
     input?: IClientConstructorInput,
@@ -28,69 +24,38 @@ export default class Hbase implements IHbase {
     this.namespace = namespace;
   }
 
-  private clearTempParams() {
-    this.columnQualifier = null;
-    this.startTime =  null;
-    this.endTime = null;
-  }
-
-  private getTimeRange() {
-    const range = [this.startTime, this.endTime].filter(el => !isNull(el) && !isUndefined(el));
-
-    return range.length === 0 ? '' : '/' + range.join(',');
-  }
-
   private getEndPoint(): string {
     return `http://${ this.host }:${ this.port }`;
   }
 
-  private getTableName() {
-    if ( this.namespace ) {
-      return this.namespace + ':' + this.tableName;
-    }
-
-    return this.tableName;
-  }
-
   table(input?: ITableNameInput) {
-    this.tableName = get(input, 'table');
-    this.clearTempParams();
+    const tableName = get(input, 'table');
 
-    return Object.keys(tableFn).reduce((prev, key) => {
-      if ( isFunction(tableFn[key]) ) {
-        prev = {
-          ...prev,
-          [key]: (...props) => tableFn[key].apply(this, props),
-        };
-      }
-      return prev;
-    }, {
-      row: (...props) => rowFn.row.apply(this, props),
-    } as any) as ITableFn;
+    return new Table({ table: tableName, host: this.host, port: this.port, namespace: this.namespace });
   }
 
   version() {
-     return Object.keys(versionFn).reduce((prev, key) => {
-      if ( isFunction(versionFn[key]) ) {
+     return Object.keys(versionServices).reduce((prev, key) => {
+      if ( isFunction(versionServices[key]) ) {
         prev = {
           ...prev,
-          [key]: (...props) => versionFn[key].apply(this, props),
+          [key]: (...props) => versionServices[key].apply(this, props),
         };
       }
       return prev;
-    }, {}) as IVersionFn;
+    }, {}) as IVersion;
   }
 
   status() {
-    return Object.keys(statusFn).reduce((prev, key) => {
-      if ( isFunction(statusFn[key]) ) {
+    return Object.keys(statusServices).reduce((prev, key) => {
+      if ( isFunction(statusServices[key]) ) {
         prev = {
           ...prev,
-          [key]: (...props) => statusFn[key].apply(this, props),
+          [key]: (...props) => statusServices[key].apply(this, props),
         };
       }
       return prev;
-    }, {}) as IStatusFn;
+    }, {}) as IStatus;
   }
 
 }

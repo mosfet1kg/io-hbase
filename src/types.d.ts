@@ -1,13 +1,20 @@
 interface IHbase {
-  table: (input: ITableNameInput) => ITableFn;
-  version: () => IVersionFn;
-  status: () => IStatusFn;
+  table: (input: ITableNameInput) => ITable;
+  version: () => IVersion;
+  status: () => IStatus;
 }
 
 interface IClientConstructorInput {
   host: string;
   port: string | number;
   namespace?: string;
+}
+
+interface ITableConstructorInput {
+  host: string;
+  port: string | number;
+  namespace?: string;
+  table?: string;
 }
 
 interface ITableNameInput {
@@ -70,7 +77,7 @@ interface InterfaceColumnSchema {
 //   REPLICATION_SCOPE: '0' }
 }
 
-interface ITableFn {
+interface ITable {
   findAll: () => Promise<ITableFindAllOut>;
   create: (input: ITableCreateInput) => Promise<void>;
   drop: () => Promise<void>;
@@ -81,11 +88,11 @@ interface ITableFn {
   row: (input: IRowInput) => IRowFn;
 }
 
-interface IVersionFn {
+interface IVersion {
   cluster: () => Promise<string>;
 }
 
-interface IStatusFn {
+interface IStatus {
   cluster: () => Promise<IStatusClusterResponse>;
 }
 

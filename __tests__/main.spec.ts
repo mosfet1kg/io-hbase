@@ -645,7 +645,6 @@ describe('greeter function', () => {
     }
   });
 
-
   it('test cluster version', async (done) => {
     try {
       const hbaseClient = new Hbase({
