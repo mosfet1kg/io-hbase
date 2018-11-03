@@ -1,6 +1,7 @@
 import * as tableFn from './table';
 import * as versionFn from './version';
 import * as statusFn from './status';
+import * as rowFn from './row';
 import {
   get,
   isFunction,
@@ -63,7 +64,9 @@ export default class Hbase implements IHbase {
         };
       }
       return prev;
-    }, {}) as ITableFn;
+    }, {
+      row: (...props) => rowFn.row.apply(this, props),
+    } as any) as ITableFn;
   }
 
   version() {
