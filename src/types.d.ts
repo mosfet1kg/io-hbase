@@ -166,3 +166,16 @@ interface IRowFn {
   get: (input?: INumOfVersions) => Promise<IRowResponse>;
   delete: () => Promise<void>;
 }
+
+interface IScannerInput {
+  batch?: number;
+  cacheBlocks?: boolean;
+  encoding?: string;
+  startRow?: string;
+  endRow?: string;
+  startTime?: number;
+  endTime?: number;
+  maxVersions?: number;
+  column?: string[] | string;
+  filter?: string;
+}

@@ -40,5 +40,5 @@ export function decodeBase64Str(str: string) {
 }
 
 export function encodeBase64Str(str: string) {
-  return  Buffer.from(str).toString('base64');
+  return Buffer.from(str).toString('base64');
 }

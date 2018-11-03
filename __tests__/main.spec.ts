@@ -273,14 +273,14 @@ describe('table function', () => {
         .put(cells);
 
       /** The timestamp in the URL looks for the newest data set with an EARLIER timestamp! **/
-      // https://stackoverflow.com/questions/37985426/hbase-get-request-for-row-data-with-timestamp
+        // https://stackoverflow.com/questions/37985426/hbase-get-request-for-row-data-with-timestamp
 
       const res = await hbaseClient
-        .table({ table })
-        .row({ key: 'rowKey' })
-        .column({ column: 'my_column_family:c1' })
-        .timestamp({ endTime: timestamp + 1 })
-        .get();
+          .table({ table })
+          .row({ key: 'rowKey' })
+          .column({ column: 'my_column_family:c1' })
+          .timestamp({ endTime: timestamp + 1 })
+          .get();
 
       console.log( JSON.stringify(res) );
 
@@ -679,4 +679,147 @@ describe('table function', () => {
     }
   });
 
+  it('test scanner, The results must be same even if different batch size to be used.', async (done) => {
+    const hbaseClient = new Hbase({
+      host: 'localhost',
+      port: 8080,
+    });
+
+    const table = 'my-table';
+
+    try {
+      await hbaseClient
+        .table({ table })
+        .create(
+          {
+            ColumnSchema: [
+              {
+                name: 'my_column_family',
+                TTL: 60 * 60 * 24 * 365 * 1,
+                COMPRESSION: 'gz',
+                REPLICATION_SCOPE: 1,
+                VERSIONS: '5',
+              },
+            ],
+          },
+        );
+
+      const timestamp = Date.now();
+
+      const cells = [
+        { column: 'my_column_family:c1', timestamp, $: 'my value3' },
+        { column: 'my_column_family:c1', timestamp: timestamp + 100, $: 'my value4' },
+        { column: 'my_column_family:c2', timestamp, $: 'my value5' },
+        { column: 'my_column_family:c2', timestamp: timestamp + 100, $: 'my value6' },
+      ];
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey1' })
+        .put(cells);
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey2' })
+        .put(cells);
+
+      const resBatch1 = await hbaseClient
+        .table({ table })
+        .scan({
+          batch: 1,
+          // startRow: 'rowKey',
+          // maxVersions: 1,
+          // filter: {
+          //   type:"PageFilter",
+          //   value:"2",
+          // },
+        });
+
+      const resBatch10 = await hbaseClient
+        .table({ table })
+        .scan({
+          batch: 10,
+          // startRow: 'rowKey',
+          // maxVersions: 1,
+          // filter: {
+          //   type:"PageFilter",
+          //   value:"2",
+          // },
+        });
+
+      console.log( JSON.stringify(resBatch1), '\n', JSON.stringify(resBatch10) );
+
+      expect( JSON.stringify(resBatch1) ).toEqual( JSON.stringify(resBatch10) );
+
+      await hbaseClient.table({ table }).drop();
+
+      done();
+    } catch (e) {
+      await hbaseClient.table({ table }).drop();
+      done.fail(e);
+    }
+  });
+
+  it('test scanner.', async (done) => {
+    const hbaseClient = new Hbase({
+      host: 'localhost',
+      port: 8080,
+    });
+
+    const table = 'my-table';
+
+    try {
+      await hbaseClient
+        .table({ table })
+        .create(
+          {
+            ColumnSchema: [
+              {
+                name: 'my_column_family',
+                TTL: 60 * 60 * 24 * 365 * 1,
+                COMPRESSION: 'gz',
+                REPLICATION_SCOPE: 1,
+                VERSIONS: '5',
+              },
+            ],
+          },
+        );
+
+      const timestamp = Date.now();
+
+      const cells = [
+        { column: 'my_column_family:c1', timestamp, $: 'my value3' },
+        { column: 'my_column_family:c1', timestamp: timestamp + 100, $: 'my value4' },
+        { column: 'my_column_family:c2', timestamp, $: 'my value5' },
+        { column: 'my_column_family:c2', timestamp: timestamp + 100, $: 'my value6' },
+      ];
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey' })
+        .put(cells);
+
+      const res = await hbaseClient
+        .table({ table })
+        .scan({
+          batch: 1,
+          startRow: 'rowKey',
+          column: ['my_column_family:c1'],  // ['my_column_family']
+          maxVersions: 1,
+          filter: {
+            type:"PageFilter",
+            value:"2",
+          },
+        });
+
+      console.log( JSON.stringify(res) );
+
+      await hbaseClient.table({ table }).drop();
+
+      done();
+    } catch (e) {
+      await hbaseClient.table({ table }).drop();
+      done.fail(e);
+    }
+  });
 });
