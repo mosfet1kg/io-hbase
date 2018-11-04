@@ -7,7 +7,6 @@
   ],
   "license": "MIT",
   "version": "0.0.1",
-  "private": true,
   "engineStrict": true,
   "engines": {
     "node": ">= 8.12.0"

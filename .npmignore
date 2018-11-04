@@ -41,6 +41,7 @@ build/
 yarn.lock
 package-lock.json
 
+.git/
 .idea/
 
 !*/**/types.d.ts
