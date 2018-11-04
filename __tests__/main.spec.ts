@@ -760,7 +760,7 @@ describe('table function', () => {
     }
   });
 
-  it('test scanner.', async (done) => {
+  it('test scanner: page filter', async (done) => {
     const hbaseClient = new Hbase({
       host: 'localhost',
       port: 8080,
@@ -787,17 +787,33 @@ describe('table function', () => {
 
       const timestamp = Date.now();
 
-      const cells = [
+      const cells1 = [
         { column: 'my_column_family:c1', timestamp, $: 'my value3' },
         { column: 'my_column_family:c1', timestamp: timestamp + 100, $: 'my value4' },
         { column: 'my_column_family:c2', timestamp, $: 'my value5' },
         { column: 'my_column_family:c2', timestamp: timestamp + 100, $: 'my value6' },
+        { column: 'my_column_family:c3', timestamp, $: 'my value7' },
+        { column: 'my_column_family:c3', timestamp: timestamp + 100, $: 'my value8' },
       ];
 
       await hbaseClient
         .table({ table })
-        .row({ key: 'rowKey' })
-        .put(cells);
+        .row({ key: 'rowKey001' })
+        .put(cells1);
+
+      const cells2 = [
+        { column: 'my_column_family:c1', timestamp, $: 'my value9' },
+        { column: 'my_column_family:c1', timestamp: timestamp + 100, $: 'my value10' },
+        { column: 'my_column_family:c2', timestamp, $: 'my value11' },
+        { column: 'my_column_family:c2', timestamp: timestamp + 100, $: 'my value12' },
+        { column: 'my_column_family:c3', timestamp, $: 'my value13' },
+        { column: 'my_column_family:c3', timestamp: timestamp + 100, $: 'my value14' },
+      ];
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey002' })
+        .put(cells2);
 
       const res = await hbaseClient
         .table({ table })
@@ -809,6 +825,86 @@ describe('table function', () => {
           filter: {
             type:"PageFilter",
             value:"2",
+          },
+        });
+
+      console.log( JSON.stringify(res) );
+
+      expect( res.Row.length ).toEqual(2);
+      expect( res.Row[0].key ).toEqual('rowKey001');
+      expect( res.Row[1].key ).toEqual('rowKey002');
+
+      await hbaseClient.table({ table }).drop();
+
+      done();
+    } catch (e) {
+      await hbaseClient.table({ table }).drop();
+      done.fail(e);
+    }
+  });
+
+  it('test scanner: family filter', async (done) => {
+    const hbaseClient = new Hbase({
+      host: 'localhost',
+      port: 8080,
+    });
+
+    const table = 'my-table';
+
+    try {
+      await hbaseClient
+        .table({ table })
+        .create(
+          {
+            ColumnSchema: [
+              {
+                name: 'my_column_family',
+                TTL: 60 * 60 * 24 * 365 * 1,
+                COMPRESSION: 'gz',
+                REPLICATION_SCOPE: 1,
+                VERSIONS: '5',
+              },
+            ],
+          },
+        );
+
+      const timestamp = Date.now();
+
+      const cells1 = [
+        { column: 'my_column_family:c1', timestamp, $: 'my value1' },
+        { column: 'my_column_family:c2', timestamp, $: 'my value2' },
+      ];
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey001' })
+        .put(cells1);
+
+
+      const cells2 = [
+        { column: 'my_column_family:c1', timestamp, $: 'my value3' },
+        { column: 'my_column_family:c2', timestamp, $: 'my value4' },
+      ];
+
+      await hbaseClient
+        .table({ table })
+        .row({ key: 'rowKey002' })
+        .put(cells2);
+
+      const res = await hbaseClient
+        .table({ table })
+        .scan({
+          batch: 1,
+          startRow: 'rowKey001', // it works as startRow <= row < endRow
+          endRow: 'rowKey003',
+          maxVersions: 1,
+          filter: {
+            type:"FamilyFilter",
+            op: "EQUAL",
+            comparator: {
+              type: "BinaryComparator",
+              value: "my_column_family",  // column family only
+            },
           },
         });
 

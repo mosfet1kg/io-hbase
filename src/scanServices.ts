@@ -13,6 +13,12 @@ import {
 
 export async function scan(input: IScannerInput = {}) {
   if ( get(input, 'filter') ) {
+
+    if ( get(input, 'filter.comparator.value') !== undefined ) {
+      (input.filter as IFilter).comparator.value
+        = encodeBase64Str((input.filter as IFilter).comparator.value);
+    }
+
     input.filter = JSON.stringify(input.filter);
   }
 
@@ -26,9 +32,9 @@ export async function scan(input: IScannerInput = {}) {
 
   if ( get(input, 'column') ) {
     if ( isArray(get(input, 'column')) ) {
-      input.column = input.column.map(el => encodeBase64Str(el));
+      input.column = (input.column as string[]).map(el => encodeBase64Str(el));
     } else {
-      input.column = encodeBase64Str(input.column);
+      input.column = encodeBase64Str((input as { column: string; }).column);
     }
   }
 

@@ -177,5 +177,15 @@ interface IScannerInput {
   endTime?: number;
   maxVersions?: number;
   column?: string[] | string;
-  filter?: string;
+  filter?: IFilter | string;
+}
+
+interface IFilter {
+  type: string;
+  value?: string;
+  op?: string;
+  comparator?: {
+    type?: string;
+    value?: string
+  };
 }
