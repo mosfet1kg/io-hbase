@@ -6,14 +6,15 @@
     "noUnusedParameters": false
   },
   "include": [
-    "./__tests__",
-    "./src"
+    "__tests__/",
+    "src/",
+    "dist/"
   ],
   "exclude": [
-    "dist",
     "out",
     "lib",
     "node_modules",
     "example"
   ]
 }
+
