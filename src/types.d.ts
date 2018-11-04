@@ -1,5 +1,5 @@
 interface IHbase {
-  table: (input: ITableNameInput) => ITable;
+  table: (input?: ITableNameInput) => ITable;
   version: () => IVersion;
   status: () => IStatus;
 }
@@ -86,7 +86,7 @@ interface ITable {
   schema: () => Promise<ITableSchemaOut>;
   region: () => Promise<ITableRegionOut>;
   row: (input: IRowInput) => IRowFn;
-  scan: () => any;
+  scan: (input: IScannerInput) => Promise<any>;
 }
 
 interface IVersion {

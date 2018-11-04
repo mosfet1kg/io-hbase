@@ -9,7 +9,7 @@ import {
   isNull,
 } from 'lodash';
 
-export default class Hbase implements IHbase {
+export class Hbase implements IHbase {
   private host: string;
   private port: string | number;
   private namespace: string;
@@ -57,5 +57,7 @@ export default class Hbase implements IHbase {
       return prev;
     }, {}) as IStatus;
   }
-
+}
+export function createClient( input?: IClientConstructorInput ): IHbase {
+  return new Hbase(input);
 }

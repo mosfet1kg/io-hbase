@@ -1,5 +1,5 @@
 import 'source-map-support/register';
-import Hbase from '../src';
+import * as Hbase from '../src';
 import {
   findIndex,
 } from 'lodash';
@@ -12,7 +12,7 @@ describe('table function', () => {
 
   it('test findAll', async (done) => {
     try {
-      const hbaseClient = new Hbase({
+      const hbaseClient = Hbase.createClient({
         host: 'localhost',
         port: 8080,
       });
@@ -32,7 +32,7 @@ describe('table function', () => {
 
   it('test createTable', async (done) => {
     try {
-      const hbaseClient = new Hbase({
+      const hbaseClient = Hbase.createClient({
         host: 'localhost',
         port: 8080,
       });
@@ -71,7 +71,7 @@ describe('table function', () => {
 
   it('test Destroy Table', async (done) => {
     try {
-      const hbaseClient = new Hbase({
+      const hbaseClient = Hbase.createClient({
         host: 'localhost',
         port: 8080,
       });
@@ -106,7 +106,7 @@ describe('table function', () => {
     try {
       const table = 'schema-test-table';
 
-      const hbaseClient = new Hbase({
+      const hbaseClient = Hbase.createClient({
         host: 'localhost',
         port: 8080,
       });
@@ -158,7 +158,7 @@ describe('table function', () => {
     try {
       const table = 'region-test-table';
 
-      const hbaseClient = new Hbase({
+      const hbaseClient = Hbase.createClient({
         host: 'localhost',
         port: 8080,
       });
@@ -192,7 +192,7 @@ describe('table function', () => {
 
   it('test row', async(done) => {
     try {
-      const hbaseClient = new Hbase({
+      const hbaseClient = Hbase.createClient({
         host: 'localhost',
         port: 8080,
       });
@@ -237,7 +237,7 @@ describe('table function', () => {
   it('test get single row with timestamp', async (done) => {
     const table = 'test-get-single-table';
 
-    const hbaseClient = new Hbase({
+    const hbaseClient = Hbase.createClient({
       host: 'localhost',
       port: 8080,
     });
@@ -303,7 +303,7 @@ describe('table function', () => {
     try {
       const table = 'test-get-rowKey-table';
 
-      const hbaseClient = new Hbase({
+      const hbaseClient = Hbase.createClient({
         host: 'localhost',
         port: 8080,
       });
@@ -365,7 +365,7 @@ describe('table function', () => {
   it('test get multiple versions', async (done) => {
     const table = 'test-get-multiple-version-table';
 
-    const hbaseClient = new Hbase({
+    const hbaseClient = Hbase.createClient({
       host: 'localhost',
       port: 8080,
     });
@@ -431,7 +431,7 @@ describe('table function', () => {
   it('test get with column Only', async (done) => {
     const table = 'test-get-column-table';
 
-    const hbaseClient = new Hbase({
+    const hbaseClient = Hbase.createClient({
       host: 'localhost',
       port: 8080,
     });
@@ -506,7 +506,7 @@ describe('table function', () => {
   it('test delete row', async (done) => {
     const table = 'test-get-column-table';
 
-    const hbaseClient = new Hbase({
+    const hbaseClient = Hbase.createClient({
       host: 'localhost',
       port: 8080,
     });
@@ -589,7 +589,7 @@ describe('table function', () => {
   it('test get with time range', async (done) => {
     const table = 'test-time-range-table';
 
-    const hbaseClient = new Hbase({
+    const hbaseClient = Hbase.createClient({
       host: 'localhost',
       port: 8080,
     });
@@ -647,7 +647,7 @@ describe('table function', () => {
 
   it('test cluster version', async (done) => {
     try {
-      const hbaseClient = new Hbase({
+      const hbaseClient = Hbase.createClient({
         host: 'localhost',
         port: 8080,
       });
@@ -664,7 +664,7 @@ describe('table function', () => {
 
   it('test status version', async (done) => {
     try {
-      const hbaseClient = new Hbase({
+      const hbaseClient = Hbase.createClient({
         host: 'localhost',
         port: 8080,
       });
@@ -680,7 +680,7 @@ describe('table function', () => {
   });
 
   it('test scanner, The results must be same even if different batch size to be used.', async (done) => {
-    const hbaseClient = new Hbase({
+    const hbaseClient = Hbase.createClient({
       host: 'localhost',
       port: 8080,
     });
@@ -761,7 +761,7 @@ describe('table function', () => {
   });
 
   it('test scanner: page filter', async (done) => {
-    const hbaseClient = new Hbase({
+    const hbaseClient = Hbase.createClient({
       host: 'localhost',
       port: 8080,
     });
@@ -844,7 +844,7 @@ describe('table function', () => {
   });
 
   it('test scanner: family filter', async (done) => {
-    const hbaseClient = new Hbase({
+    const hbaseClient = Hbase.createClient({
       host: 'localhost',
       port: 8080,
     });
