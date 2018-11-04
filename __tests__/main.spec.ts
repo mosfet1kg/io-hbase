@@ -880,7 +880,6 @@ describe('table function', () => {
         .row({ key: 'rowKey001' })
         .put(cells1);
 
-
       const cells2 = [
         { column: 'my_column_family:c1', timestamp, $: 'my value3' },
         { column: 'my_column_family:c2', timestamp, $: 'my value4' },

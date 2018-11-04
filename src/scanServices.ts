@@ -3,6 +3,7 @@ import {
   joinUrl,
   encodeBase64Str,
   decodeRowResponse,
+  encodeFilterParam,
 } from "./utils";
 import {
   get,
@@ -13,12 +14,7 @@ import {
 
 export async function scan(input: IScannerInput = {}) {
   if ( get(input, 'filter') ) {
-
-    if ( get(input, 'filter.comparator.value') !== undefined ) {
-      (input.filter as IFilter).comparator.value
-        = encodeBase64Str((input.filter as IFilter).comparator.value);
-    }
-
+    input.filter = encodeFilterParam(input.filter);
     input.filter = JSON.stringify(input.filter);
   }
 

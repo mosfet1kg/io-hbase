@@ -1,5 +1,6 @@
 import {
   get,
+  isArray,
 } from 'lodash';
 
 export function joinUrl(...props) {
@@ -41,4 +42,52 @@ export function decodeBase64Str(str: string) {
 
 export function encodeBase64Str(str: string) {
   return Buffer.from(str).toString('base64');
+}
+
+export function encodeFilterParam(filter: any) {
+  const type = get(filter, 'type');
+
+  if ( [
+    'ColumnPrefixFilter',
+    'ColumnRangeFilter',
+    'InclusiveStopFilter',
+    'MultipleColumnPrefixFilter',
+    'PrefixFilter',
+  ].includes(type) ) {
+    if ( get(filter, 'value') ) {
+      filter.value = encodeBase64Str(filter.value);
+    }
+
+    /** ColumnRangeFilter **/
+    if ( get(filter, 'minColumn') ) {
+      filter.minColumn = encodeBase64Str(filter.minColumn);
+    }
+
+    if ( get(filter, 'maxColumn') ) {
+      filter.maxColumn = encodeBase64Str(filter.maxColumn);
+    }
+
+    /** MultipleColumnPrefixFilter **/
+    if ( get(filter, 'prefixes') ) {
+      filter.fixes = filter.fixes.map(el => encodeBase64Str(el));
+    }
+
+  }
+
+  if ( get(filter, 'comparator') !== undefined ) {
+    // if ( [
+    // 'BinaryComparator',
+    // 'RegexStringComparator',
+    // ].includes(get(filter, 'comparator.type')) ) {
+    (filter as IFilter).comparator.value
+      = encodeBase64Str((filter as IFilter).comparator.value);
+    // }
+  }
+
+  /** MUST_PASS_ALL **/
+  if ( type === 'FilterList' && get(filter, 'filterList') && isArray(get(filter, 'filterList')) ) {
+    filter.filters = filter.filters.map(el => encodeFilterParam(el));
+  }
+
+  return filter;
 }
