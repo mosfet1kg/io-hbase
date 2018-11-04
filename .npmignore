@@ -47,4 +47,5 @@ package-lock.json
 !*/**/jest.config.js
 !*/**/preprocessor.js
 
-dist/
+!dist/
+src/

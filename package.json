@@ -1,5 +1,11 @@
 {
   "name": "io-hbase",
+  "title": "HBase REST API Client for Node",
+  "keywords": [
+    "hbase",
+    "hbase rest"
+  ],
+  "license": "MIT",
   "version": "0.0.1",
   "private": true,
   "engineStrict": true,
@@ -19,7 +25,7 @@
     "source-map-support": "^0.5.9"
   },
   "scripts": {
-    "clean": "rimraf coverage build tmp",
+    "clean": "rimraf coverage build tmp dist",
     "prebuild": "npm run clean",
     "build": "tsc -p tsconfig.release.json && cp src/types.d.ts dist/types.d.ts",
     "watch": "tsc -w -p tsconfig.release.json",
@@ -32,6 +38,10 @@
   "dependencies": {
     "axios": "^0.18.0",
     "lodash": "^4.17.11"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mosfet1kg/io-hbase.git"
   },
   "jest": {
     "testEnvironment": "node",
