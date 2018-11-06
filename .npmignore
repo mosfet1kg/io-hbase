@@ -37,7 +37,7 @@ package-lock.json
 .git/**/*
 .idea/**/*
 
-!*/**/types.d.ts
+!dist/types.d.ts
 !*/**/jest.config.js
 !*/**/preprocessor.js
 
