@@ -1,6 +1,7 @@
 import * as versionServices from './versionServices';
 import * as statusServices from './statusServices';
 import Table from './Table';
+import * as url from 'url';
 
 import {
   get,
@@ -19,13 +20,13 @@ export class Hbase implements IHbase {
   ) {
     const { host = 'localhost', port = 8080, namespace = null } = input || {};
 
-    this.host = host;
+    this.host = isNull(url.parse(host).protocol) ? 'http://' + host : host;
     this.port = port;
     this.namespace = namespace;
   }
 
   private getEndPoint(): string {
-    return `http://${ this.host }:${ this.port }`;
+    return `${ this.host }:${ this.port }`;
   }
 
   table(input?: ITableNameInput) {
