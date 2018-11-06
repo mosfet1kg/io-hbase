@@ -43,7 +43,7 @@ package-lock.json
 
 .idea/
 
-!*/**/types.d.ts
+!src/types.d.ts
 !*/**/jest.config.js
 !*/**/preprocessor.js
 
