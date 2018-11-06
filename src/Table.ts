@@ -7,6 +7,7 @@ import {
   isUndefined,
   isNull,
 } from 'lodash';
+import * as url from 'url';
 
 export default class Table implements ITable {
   private host: string;
@@ -22,7 +23,7 @@ export default class Table implements ITable {
   ) {
     const { host = 'localhost', port = 8080, namespace = null } = input || {};
 
-    this.host = host;
+    this.host = isNull(url.parse(host).protocol) ? 'http://' + host : host;
     this.port = port;
     this.namespace = namespace;
     this.tableName = get(input, 'table');
@@ -35,7 +36,7 @@ export default class Table implements ITable {
   }
 
   private getEndPoint(): string {
-    return `http://${ this.host }:${ this.port }`;
+    return `${ this.host }:${ this.port }`;
   }
 
   private getTableName() {
