@@ -34,9 +34,9 @@ build/
 
 # js
 
-*/**/*.js
-*/**/*.d.ts
-*/**/*.js.map
+dist/**/*.js
+dist/**/*.d.ts
+dist/**/*.js.map
 
 yarn.lock
 package-lock.json
@@ -48,3 +48,4 @@ package-lock.json
 !*/**/preprocessor.js
 
 dist/
+!docs/
