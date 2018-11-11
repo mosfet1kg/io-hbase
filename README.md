@@ -1,5 +1,7 @@
 # `io-hbase`
 
+![](./docs/assets/iohbase.png)
+
 REST API client for HBase.
 
 ## Installing Dependencies
