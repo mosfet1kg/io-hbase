@@ -75,14 +75,18 @@ export function encodeFilterParam(filter: any) {
   }
 
   if ( ! isUndefined( get(filter, 'comparator') ) ) {
-    // if ( [
-    // 'BinaryComparator',
-    // 'RegexStringComparator',
-    // ].includes(get(filter, 'comparator.type')) ) {
-    (filter as IFilter).comparator.value
-      = encodeBase64Str((filter as IFilter).comparator.value);
-    // }
-  }
+    /**  plain text:
+     *    'RegexStringComparator'
+     *   base64 format:
+     *    'BinaryComparator'
+     */
+    if ( [
+      'BinaryComparator',
+    ].includes(get(filter, 'comparator.type')) ) {
+      (filter as IFilter).comparator.value
+        = encodeBase64Str((filter as IFilter).comparator.value);
+    }
+  } // end if
 
   if ( ! isUndefined( get(filter, 'family') ) ) {
     filter.family = encodeBase64Str(filter.family);
