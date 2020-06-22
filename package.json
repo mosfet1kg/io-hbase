@@ -6,7 +6,7 @@
     "hbase rest"
   ],
   "license": "MIT",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "engineStrict": true,
   "engines": {
     "node": ">= 8.12.0"
