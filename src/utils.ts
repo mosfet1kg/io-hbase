@@ -1,6 +1,7 @@
 import {
   get,
   isArray,
+  isUndefined,
 } from 'lodash';
 
 export function joinUrl(...props) {
@@ -71,10 +72,9 @@ export function encodeFilterParam(filter: any) {
     if ( get(filter, 'prefixes') ) {
       filter.fixes = filter.fixes.map(el => encodeBase64Str(el));
     }
-
   }
 
-  if ( get(filter, 'comparator') !== undefined ) {
+  if ( ! isUndefined( get(filter, 'comparator') ) ) {
     // if ( [
     // 'BinaryComparator',
     // 'RegexStringComparator',
@@ -84,8 +84,16 @@ export function encodeFilterParam(filter: any) {
     // }
   }
 
+  if ( ! isUndefined( get(filter, 'family') ) ) {
+    filter.family = encodeBase64Str(filter.family);
+  }
+
+  if ( ! isUndefined( get(filter, 'qualifier') ) ) {
+    filter.qualifier = encodeBase64Str(filter.qualifier);
+  }
+
   /** MUST_PASS_ALL **/
-  if ( type === 'FilterList' && get(filter, 'filterList') && isArray(get(filter, 'filterList')) ) {
+  if ( type === 'FilterList' && get(filter, 'filters') && isArray(get(filter, 'filters')) ) {
     filter.filters = filter.filters.map(el => encodeFilterParam(el));
   }
 

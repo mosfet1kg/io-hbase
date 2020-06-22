@@ -13,8 +13,8 @@ describe('table function', () => {
   it('test findAll', async (done) => {
     try {
       const hbaseClient = Hbase.createClient({
-        host: 'localhost',
-        port: 8080,
+        host: 'http://avbeta-rum-db01.extncl.nfra.io',
+        port: 30550,
       });
 
       const allTableList = await hbaseClient
@@ -916,5 +916,61 @@ describe('table function', () => {
       await hbaseClient.table({ table }).drop();
       done.fail(e);
     }
+  });
+
+  it('Test 2', async (done) => {
+    const hbaseClient = Hbase.createClient({
+      host: 'http://avbeta-rum-db01.extncl.nfra.io',
+      port: 30550,
+    });
+
+    const tableName: string = 'device-1h';
+
+    // @ts-ignore
+    hbaseClient
+      .table({ table: tableName })
+      .scan(
+        {
+          column:[
+            "count:pv", "count:session_count", "device:device", "pagegroup:pathname", "pagegroup:host",
+          ],
+          maxVersions:1,
+          startTime:1592784000000,
+          endTime:1592830800001,
+          startRow:"3fe1c490756561382f6620ab5ff85ae91592784000000f8ff2c2a2c24ea91a61997b12a39fe89",
+          endRow:"3fe1c490756561382f6620ab5ff85ae91592830800001f8ff2c2a2c24ea91a61997b12a39fe89",
+          filter:{
+            type:"FilterList",
+            op:"MUST_PASS_ALL",
+            filters:[
+              // {"type": "SingleColumnValueFilter",
+              //   "op":"EQUAL",
+              //   "family": "pagegroup",
+              //   "qualifier": "pathname",
+              //   "latestVersion":true,
+              //   "comparator":{"type":"BinaryComparator","value": encodeFn("*")
+              //   }},
+              // {"type":"SingleColumnValueFilter","op":"EQUAL","family":"pagegroup","qualifier":"host","latestVersion":true,
+              //   "comparator":{"type":"BinaryComparator","value": encodeFn("kr.object.ncloudstorage.com")
+              //   }},
+              {
+                type:"SingleColumnValueFilter",
+                op:"EQUAL",
+                family: "device",
+                qualifier: "device",
+                latestVersion: true,
+                comparator:{
+                  type:"BinaryComparator", value: "tablet",
+                },
+              },
+            ] ,
+          },
+        } as any,
+      )
+      .then((result) => {
+        console.log( JSON.stringify(result.Row) );
+
+        done();
+      });
   });
 });

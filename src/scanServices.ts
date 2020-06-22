@@ -18,6 +18,8 @@ export async function scan(input: IScannerInput = {}) {
     input.filter = JSON.stringify(input.filter);
   }
 
+  console.log( input.filter );
+
   if ( get(input, 'startRow') ) {
     input.startRow = encodeBase64Str(input.startRow);
   }
@@ -33,7 +35,7 @@ export async function scan(input: IScannerInput = {}) {
       input.column = encodeBase64Str((input as { column: string; }).column);
     }
   }
-
+console.log( input );
   const initScanner = (): Promise<string> => {
     return axios({
       method: 'PUT',
