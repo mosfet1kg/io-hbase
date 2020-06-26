@@ -7,9 +7,14 @@ import axios from "axios";
 import {
   isNumber,
   isUndefined,
-  isNull,
   get,
 } from "lodash";
+import {
+  ICell,
+  ITimeStamp,
+  INumOfVersions,
+  IRowResponse,
+} from './interfaces';
 
 export function row({ key }) {
   return {

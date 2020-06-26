@@ -1,12 +1,15 @@
 import { pick } from 'lodash';
+import {
+  IColumnSchema,
+} from './interfaces';
 
 export function getValidColumnOnly(
   {
     ColumnSchema,
   }: {
-    ColumnSchema: InterfaceColumnSchema[];
+    ColumnSchema: IColumnSchema[];
   },
-): InterfaceColumnSchema[] {
+): IColumnSchema[] {
   return ColumnSchema.map(col => (
       pick(col,
         ['name',

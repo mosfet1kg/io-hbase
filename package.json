@@ -6,7 +6,7 @@
     "hbase rest"
   ],
   "license": "MIT",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "engineStrict": true,
   "engines": {
     "node": ">= 8.12.0"
@@ -28,8 +28,8 @@
   "scripts": {
     "clean": "rimraf coverage build tmp dist",
     "prebuild": "npm run clean",
-    "build": "tsc -p tsconfig.release.json && cp src/types.d.ts dist/types.d.ts && printf \"import './types';\n$(cat ./dist/index.d.ts)\" > ./dist/index.d.ts",
-    "watch": "tsc -w -p tsconfig.release.json",
+    "build": "tsc -p tsconfig.release.json",
+    "watch": "tsc -w -p tsconfig.json",
     "lint": "tslint -t stylish --project \"tsconfig.release.json\"",
     "pretest": "npm run lint && tsc -p tsconfig.json",
     "test": "npm run test-only",

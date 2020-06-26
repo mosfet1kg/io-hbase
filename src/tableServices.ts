@@ -1,14 +1,18 @@
 import axios from "axios";
 import {
   get,
-  pick,
-  isNumber,
-  isUndefined,
 } from 'lodash';
 import { getValidColumnOnly } from './validation';
 import {
   joinUrl,
 } from './utils';
+import {
+  ITableFindAllOut,
+  ITableCreateInput,
+  ITableUpdateInput,
+  ITableSchemaOut,
+  ITableRegionOut,
+} from './interfaces';
 
 export function findAll()
   : Promise<ITableFindAllOut> {

@@ -3,11 +3,14 @@ import { row as rowServices } from './rowServices';
 import { scan as scanServices } from './scanServices';
 import {
   get,
-  isFunction,
   isUndefined,
   isNull,
 } from 'lodash';
 import * as url from 'url';
+import {
+  ITable,
+  ITableConstructorInput,
+} from "./interfaces";
 
 export default class Table implements ITable {
   private host: string;
