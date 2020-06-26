@@ -2,11 +2,18 @@ import * as versionServices from './versionServices';
 import * as statusServices from './statusServices';
 import Table from './Table';
 import * as url from 'url';
+export * from './interfaces';
+import {
+  IHbase,
+  IClientConstructorInput,
+  ITableNameInput,
+  IVersion,
+  IStatus,
+} from './interfaces';
 
 import {
   get,
   isFunction,
-  isUndefined,
   isNull,
 } from 'lodash';
 

@@ -10,6 +10,11 @@ import {
   findIndex,
   isArray,
 } from 'lodash';
+import {
+  IScannerInput,
+  IRowResponse,
+  IRow,
+} from './interfaces';
 
 export async function scan(input: IScannerInput = {}) {
   if ( get(input, 'filter') ) {
@@ -58,7 +63,7 @@ export async function scan(input: IScannerInput = {}) {
   const getDataFromScanner = ({ scannerId }: { scannerId: string; }): Promise<
     {
       status: number;
-      data: IRow;
+      data: IRowResponse;
     }> => {
     return axios({
       method: 'get',
@@ -72,7 +77,7 @@ export async function scan(input: IScannerInput = {}) {
   try {
     scannerId = await initScanner();
     const out: { Row: IRow[] } = { Row: [] };
-
+    // const start = Date.now();
     for ( ;; ) {
       const res = await getDataFromScanner({ scannerId });
 
@@ -80,19 +85,18 @@ export async function scan(input: IScannerInput = {}) {
         break;
       }
 
-      const responseRows = (res.data as any).Row;
+      const responseRows = res.data.Row;
 
-      for ( const resRow of responseRows ) {
-        const idx = findIndex( out.Row, { key: resRow.key } );
-        if ( idx === -1 ) {
-          out.Row = [...out.Row, resRow];
-        } else {
-          out.Row[idx].Cell = [...out.Row[idx].Cell, ...resRow.Cell];
-        } // end if
-      } // end loop
-
+      out.Row = [...out.Row, ...responseRows];
+      // for ( const resRow of responseRows ) {
+      //   const idx = findIndex( out.Row, { key: resRow.key } );
+      //   if ( idx === -1 ) {
+      //     out.Row = [...out.Row, resRow];
+        // } else {
+        //   out.Row[idx].Cell = [...out.Row[idx].Cell, ...resRow.Cell];
+        // } // end if
+      // } // end loop
     } // end for loop
-
     await deleteScanner({ scannerId });
 
     return decodeRowResponse(out);

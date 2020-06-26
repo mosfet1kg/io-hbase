@@ -1,45 +1,45 @@
-interface IHbase {
+export interface IHbase {
   table: (input?: ITableNameInput) => ITable;
   version: () => IVersion;
   status: () => IStatus;
 }
 
-interface IClientConstructorInput {
+export interface IClientConstructorInput {
   host: string;
   port: string | number;
   namespace?: string;
 }
 
-interface ITableConstructorInput {
+export interface ITableConstructorInput {
   host: string;
   port: string | number;
   namespace?: string;
   table?: string;
 }
 
-interface ITableNameInput {
+export interface ITableNameInput {
   table?: string;
 }
 
-interface ITableCreateInput {
-  ColumnSchema: InterfaceColumnSchema[];
+export interface ITableCreateInput {
+  ColumnSchema: IColumnSchema[];
 }
 
-interface ITableFindAllOut {
+export interface ITableFindAllOut {
   table: { name: string; }[];
 }
 
-interface ITableUpdateInput {
-  ColumnSchema: InterfaceColumnSchema[];
+export interface ITableUpdateInput {
+  ColumnSchema: IColumnSchema[];
 }
 
-interface ITableSchemaOut {
+export interface ITableSchemaOut {
   name: string; // TableName
-  ColumnSchema: InterfaceColumnSchema[];
+  ColumnSchema: IColumnSchema[];
   IS_META: boolean;
 }
 
-interface ITableRegionOut {
+export interface ITableRegionOut {
   name: string; // TableName
   Region: {
     id: number
@@ -50,7 +50,7 @@ interface ITableRegionOut {
   }[];
 }
 
-interface InterfaceColumnSchema {
+export interface IColumnSchema {
   name: string;
   BLOOMFILTER?: string;
   VERSIONS?: string;
@@ -77,7 +77,7 @@ interface InterfaceColumnSchema {
 //   REPLICATION_SCOPE: '0' }
 }
 
-interface ITable {
+export interface ITable {
   findAll: () => Promise<ITableFindAllOut>;
   create: (input: ITableCreateInput) => Promise<void>;
   drop: () => Promise<void>;
@@ -89,38 +89,38 @@ interface ITable {
   scan: (input: IScannerInput) => Promise<any>;
 }
 
-interface IVersion {
+export interface IVersion {
   cluster: () => Promise<string>;
 }
 
-interface IStatus {
+export interface IStatus {
   cluster: () => Promise<IStatusClusterResponse>;
 }
 
-interface ICell {
+export interface ICell {
   column: string;
   timestamp: number;
   $: string;
 }
 
-interface IRowInput {
+export interface IRowInput {
   key: string;
 }
 
-interface IRow {
+export interface IRow {
   key: string;
   Cell: ICell[];
 }
 
-interface IRowResponse {
+export interface IRowResponse {
   Row: IRow[];
 }
 
-interface INumOfVersions {
+export interface INumOfVersions {
   v: number;
 }
 
-interface IStatusClusterResponse {
+export interface IStatusClusterResponse {
   regions: number;
   requests: number;
   averageLoad: number;
@@ -128,7 +128,7 @@ interface IStatusClusterResponse {
   DeadNodes: any[];
 }
 
-interface LiveNode {
+export interface LiveNode {
   name: string;
   startCode: number;
   requests: number;
@@ -137,7 +137,7 @@ interface LiveNode {
   Region: Region[];
 }
 
-interface Region {
+export interface Region {
   name: string;
   stores: number;
   storefiles: number;
@@ -153,13 +153,13 @@ interface Region {
   currentCompactedKVs: number;
 }
 
-interface ITimeStamp {
+export interface ITimeStamp {
   startTime?: number;
   endTime?: number;
   timestamp?: number;
 }
 
-interface IRowFn {
+export interface IRowFn {
   put: (cells: ICell[]) => Promise<void>;
   timestamp: (input: ITimeStamp) => IRowFn;
   column: (input: { column: string; qualifier?: string; }) => IRowFn;
@@ -167,7 +167,7 @@ interface IRowFn {
   delete: () => Promise<void>;
 }
 
-interface IScannerInput {
+export interface IScannerInput {
   batch?: number;
   cacheBlocks?: boolean;
   encoding?: string;
@@ -180,7 +180,7 @@ interface IScannerInput {
   filter?: IFilter | string;
 }
 
-interface IFilter {
+export interface IFilter {
   type: string;
   value?: string;
   op?: string;

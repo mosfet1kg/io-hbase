@@ -1,5 +1,8 @@
 import axios from 'axios';
 import { joinUrl } from './utils';
+import {
+  IStatusClusterResponse,
+} from './interfaces';
 
 export function cluster(): Promise<IStatusClusterResponse> {
   return axios({

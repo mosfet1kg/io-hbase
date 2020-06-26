@@ -3,6 +3,10 @@ import {
   isArray,
   isUndefined,
 } from 'lodash';
+import {
+  IRowResponse,
+  IFilter,
+} from './interfaces';
 
 export function joinUrl(...props) {
   return props.reduce((prev, curr) => {

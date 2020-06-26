@@ -1018,4 +1018,53 @@ describe('table function', () => {
         done();
       });
   });
+
+  it('Test 4', async (done) => {
+    const hbaseClient = Hbase.createClient({
+      host: 'xrum-api01.extncl.nfra.io',
+      port: 30550,
+    });
+
+    const tableName: string = 'all-1h';
+
+    const start1 = Date.now();
+    // @ts-ignore
+    hbaseClient
+      .table({ table: tableName })
+      .scan(
+        {
+          column:[
+            "pagegroup:host", "pagegroup:pathname", "count:session_count", "count:pv", "perf:browserLoadTime"
+          ],
+          maxVersions:1,
+          startTime:1591052400000,
+          endTime:1591142400001,
+          startRow:"46f7433c053cb22d0c79670e71f3fff415910524000000031d380197ee8413470b1298defcf14",
+          endRow:"46f7433c053cb22d0c79670e71f3fff415911424000010031d380197ee8413470b1298defcf14",
+          filter:{
+            type:"FilterList",
+            op:"MUST_PASS_ALL",
+            filters:
+              [
+                {
+                  type:"SingleColumnValueFilter",
+                  op:"EQUAL",
+                  family:"pagegroup",
+                  qualifier:"host",
+                  latestVersion:true,
+                  comparator:{
+                    type:"RegexStringComparator",
+                    value:"sticker.ly",
+                  },
+                },
+              ],
+          },
+        } as any,
+      )
+      .then((result) => {
+        console.log( JSON.stringify(result.Row) );
+        console.log( Date.now() - start1 );
+        done();
+      });
+  });
 });
